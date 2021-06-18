@@ -1,0 +1,4 @@
+docker_gamechain_settings.conf
+entrypoint2.sh
+.env
+!.gitignore
