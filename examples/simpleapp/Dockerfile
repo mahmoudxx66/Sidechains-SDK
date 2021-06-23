@@ -1,28 +1,26 @@
 ## Build env_dependencies
-FROMopenjdk:11 AS simpleapp-builder
+FROM zencash/sc-ci-base:bionic_rust-1.51.0_jdk-11_latest AS simpleapp-builder
 
 SHELL ["/bin/bash", "-c"]
 
 ARG RUSTUP_TOOLCHAIN=1.51.0
-ARG SDK_TAG=0.2.7
 ENV PATH="/root/.cargo/bin:${PATH}"
+COPY ./ci/build_sc_cryptolib.sh /tmp/build_sc_cryptolib.sh
 
 RUN set -euxo pipefail \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y --no-install-recommends dist-upgrade \
-    && apt-get -y --no-install-recommends install build-essential ca-certificates cmake curl git scala maven gcc-mingw-w64-x86-64 \
-    && git clone --depth 1 --branch ${SDK_TAG} https://github.com/HorizenOfficial/Sidechains-SDK.git /Sidechains-SDK \
+    && apt-get -y --no-install-recommends install build-essential ca-certificates cmake curl git scala maven gcc-mingw-w64-x86-64 gnupg2 gnupg1-curl wget \
+    && git clone --depth 1 --branch development_tmp https://github.com/HorizenOfficial/zendoo-sc-cryptolib.git /sc-cryptolib \
+    && mv /tmp/build_sc_cryptolib.sh /sc-cryptolib/ && chmod +x /sc-cryptolib/build_sc_cryptolib.sh && ./sc-cryptolib/build_sc_cryptolib.sh \
+    && git clone --depth 1 --branch dev https://github.com/HorizenOfficial/Sidechains-SDK.git /Sidechains-SDK \
     && cd /Sidechains-SDK && mvn install -DskipTests \
     && curl https://sh.rustup.rs -sSf | bash -s -- -y \
     && rustup target add x86_64-pc-windows-gnu
 
 # split into two RUN commands to make use of build cache in previous layer
-COPY . /simpleapp
-
-RUN set -euxo pipefail \
-    && cd /simpleapp && mvn install
 
 ## Build Final Image
 FROM openjdk:11-jre-slim
@@ -31,8 +29,9 @@ SHELL ["/bin/bash", "-c"]
 
 WORKDIR /simpleapp
 
-COPY --from=simpleapp-builder /simpleapp/target/*.jar /Sidechains-SDK/tools/sctool/target/sidechains-sdk-scbootstrappingtools-*.jar /simpleapp/
-COPY --from=simpleapp-builder /simpleapp/target/lib /simpleapp/lib
+COPY --from=simpleapp-builder /Sidechains-SDK/examples/simpleapp/target/*.jar /Sidechains-SDK/tools/sctool/target/sidechains-sdk-scbootstrappingtools-*.jar /simpleapp/
+COPY --from=simpleapp-builder /Sidechains-SDK/examples/simpleapp/target/lib /simpleapp/lib
+COPY --from=simpleapp-builder /Sidechains-SDK/tools/sctool/target/lib simpleapp/bottstrappingtools_lib
 COPY ./ci/entrypoint.sh ./src/main/resources/* /simpleapp/config/
 
 RUN set -euxo pipefail \
