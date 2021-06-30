@@ -28,7 +28,7 @@ WORKDIR /simpleapp
 
 COPY --from=simpleapp-builder /Sidechains-SDK/examples/simpleapp/target/*.jar /Sidechains-SDK/tools/sctool/target/sidechains-sdk-scbootstrappingtools-*.jar /simpleapp/
 COPY --from=simpleapp-builder /Sidechains-SDK/examples/simpleapp/target/lib /simpleapp/lib
-COPY --from=simpleapp-builder /Sidechains-SDK/tools/sctool/target/lib simpleapp/bottstrappingtools_lib
+COPY --from=simpleapp-builder /Sidechains-SDK/tools/sctool/target/lib /simpleapp/tools/lib
 COPY ./ci/entrypoint.sh ./src/main/resources/* /simpleapp/config/
 
 RUN set -euxo pipefail \
