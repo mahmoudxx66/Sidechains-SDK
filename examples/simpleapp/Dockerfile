@@ -12,9 +12,9 @@ RUN set -euxo pipefail \
     && apt-get -y --no-install-recommends install apt-utils \
     && apt-get -y --no-install-recommends dist-upgrade \
     && apt-get -y --no-install-recommends install cmake git gnupg1-curl \
-    && git clone --depth 1 --branch development_tmp https://github.com/HorizenOfficial/zendoo-sc-cryptolib.git /sc-cryptolib \
+    && git clone --depth 1 --branch proof_vk_check  https://github.com/HorizenOfficial/zendoo-sc-cryptolib.git /sc-cryptolib \
     && mv /tmp/build_sc_cryptolib.sh /sc-cryptolib/ && chmod +x /sc-cryptolib/build_sc_cryptolib.sh && ./sc-cryptolib/build_sc_cryptolib.sh \
-    && git clone --depth 1 --branch dev https://github.com/HorizenOfficial/Sidechains-SDK.git /Sidechains-SDK \
+    && git clone --depth 1 --branch check_vk_size https://github.com/HorizenOfficial/Sidechains-SDK.git /Sidechains-SDK \
     && cd /Sidechains-SDK && mvn install -DskipTests
 
 # split into two RUN commands to make use of build cache in previous layer
