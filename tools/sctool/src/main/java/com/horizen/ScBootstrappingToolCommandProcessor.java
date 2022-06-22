@@ -1,7 +1,9 @@
 package com.horizen;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -77,6 +79,9 @@ public class ScBootstrappingToolCommandProcessor extends CommandProcessor {
                 break;
             case "generateCertProofInfo":
                 processGenerateCertProofInfo(command.data());
+                break;
+            case "generateCertProofInfoNew":
+                processGenerateCertProofInfoNew(command.data());
                 break;
             case "generateCswProofInfo":
                 processGenerateCswProofInfo(command.data());
@@ -200,10 +205,19 @@ public class ScBootstrappingToolCommandProcessor extends CommandProcessor {
     private void printGenerateCertProofInfoUsageMsg(String error) {
         printer.print("Error: " + error);
         printer.print("Usage:\n" +
-                      "\tgenerateCertProofInfo {\"seed\":\"my seed\", \"maxPks\":7, \"threshold\":5, " +
-                      "\"provingKeyPath\": \"/tmp/sidechain/snark_proving_key\", " +
-                      "\"verificationKeyPath\": \"/tmp/sidechain/snark_verification_key\" }" +
-                      "\tthreshold parameter should be less or equal to keyCount.");
+                "\tgenerateCertProofInfo {\"seeds\": [\"seed_1\", ... , \"seed_n\"], \"threshold\":5, " +
+                "\"provingKeyPath\": \"/tmp/sidechain/snark_proving_key\", " +
+                "\"verificationKeyPath\": \"/tmp/sidechain/snark_verification_key\" }" +
+                "\tthreshold parameter should be less or equal to n (number of seeds).");
+    }
+
+    private void printGenerateCertProofInfoUsageMsgNew(String error) {
+        printer.print("Error: " + error);
+        printer.print("Usage:\n" +
+                "\tgenerateCertProofInfo {\"seed\":\"my seed\", \"maxPks\":7, \"threshold\":5, " +
+                "\"provingKeyPath\": \"/tmp/sidechain/snark_proving_key\", " +
+                "\"verificationKeyPath\": \"/tmp/sidechain/snark_verification_key\" }" +
+                "\tthreshold parameter should be less or equal to keyCount.");
     }
 
     private void processGenerateCertProofInfo(JsonNode json) {
@@ -288,6 +302,110 @@ public class ScBootstrappingToolCommandProcessor extends CommandProcessor {
         ObjectNode resJson = mapper.createObjectNode();
 
         resJson.put("maxPks", maxPks);
+        resJson.put("threshold", threshold);
+        resJson.put("genSysConstant", genSysConstant);
+        resJson.put("verificationKey", verificationKey);
+
+        ArrayNode keyArrayNode = resJson.putArray("schnorrKeys");
+
+        for (SchnorrSecret secretKey : secretKeys) {
+            ObjectNode keyNode = mapper.createObjectNode();
+            keyNode.put("schnorrSecret", BytesUtils.toHexString(secretsCompanion.toBytes(secretKey)));
+            keyNode.put("schnorrPublicKey", BytesUtils.toHexString(secretKey.getPublicBytes()));
+            keyArrayNode.add(keyNode);
+        }
+
+        String res = resJson.toString();
+        printer.print(res);
+    }
+
+
+    private void processGenerateCertProofInfoNew(JsonNode json) {
+        if(!json.has("seeds") || !json.get("seeds").isArray()) {
+            printGenerateCertProofInfoUsageMsgNew("seeds array not specified or with invalid format.");
+            return;
+        }
+
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>(){});
+
+        List<byte[]> seeds = new ArrayList<>();
+        try {
+            List<String> list = reader.readValue(json);
+            for (String str : list ) {
+                seeds.add(str.getBytes());
+            }
+        } catch (Exception e){
+
+        }
+
+        int numberOfPks = seeds.size();
+
+        if (numberOfPks == 0) {
+            printGenerateCertProofInfoUsageMsgNew("Empty list of seeds");
+            return;
+        }
+
+        if (!json.has("threshold") || !json.get("threshold").isInt()) {
+            printGenerateCertProofInfoUsageMsgNew("wrong threshold");
+            return;
+        }
+
+        int threshold = json.get("threshold").asInt();
+
+        if (threshold <= 0 || threshold > numberOfPks) {
+            printGenerateCertProofInfoUsageMsgNew("wrong threshold: " + threshold);
+            return;
+        }
+
+        if (!json.has("provingKeyPath") || !json.get("provingKeyPath").isTextual()) {
+            printGenerateCertProofInfoUsageMsgNew("wrong provingKeyPath value. Textual value expected.");
+            return;
+        }
+        String provingKeyPath = json.get("provingKeyPath").asText();
+
+        if (!json.has("verificationKeyPath") || !json.get("verificationKeyPath").isTextual()) {
+            printGenerateCertProofInfoUsageMsgNew("wrong verificationKeyPath value. Textual value expected.");
+            return;
+        }
+        String verificationKeyPath = json.get("verificationKeyPath").asText();
+
+        SidechainSecretsCompanion secretsCompanion = new SidechainSecretsCompanion(new HashMap<>());
+
+        // Generate all keys only if verification key doesn't exist.
+        // Note: we are interested only in verification key raw data.
+        if(!Files.exists(Paths.get(verificationKeyPath))) {
+
+            if (!initDlogKey()) {
+                printer.print("Error occurred during dlog key generation.");
+                return;
+            }
+
+            if (!CryptoLibProvider.sigProofThresholdCircuitFunctions().generateCoboundaryMarlinSnarkKeys(numberOfPks, provingKeyPath, verificationKeyPath)) {
+                printer.print("Error occurred during snark keys generation.");
+                return;
+            }
+        }
+        // Read verification key from file
+        String verificationKey = CryptoLibProvider.commonCircuitFunctions().getCoboundaryMarlinSnarkVerificationKeyHex(verificationKeyPath);
+        if(verificationKey.isEmpty()) {
+            printer.print("Verification key file is empty or the key is broken.");
+            return;
+        }
+
+        List<SchnorrSecret> secretKeys = new ArrayList<>();
+
+        for (int i = 0; i < numberOfPks; i++ ) {
+            secretKeys.add(SchnorrKeyGenerator.getInstance()
+                    .generateSecret(Bytes.concat(seeds.get(i), Ints.toByteArray(i))));
+        }
+
+        List<byte[]> publicKeysBytes = secretKeys.stream().map(SchnorrSecret::getPublicBytes).collect(Collectors.toList());
+        String genSysConstant = BytesUtils.toHexString(CryptoLibProvider.sigProofThresholdCircuitFunctions().generateSysDataConstant(publicKeysBytes, threshold));
+
+        ObjectNode resJson = mapper.createObjectNode();
+
+        resJson.put("maxPks", numberOfPks);
         resJson.put("threshold", threshold);
         resJson.put("genSysConstant", genSysConstant);
         resJson.put("verificationKey", verificationKey);
