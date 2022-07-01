@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/eth/tracers/logger"
 	"github.com/ethereum/go-ethereum/params"
 	"math"
 	"math/big"
@@ -127,9 +128,10 @@ func (s *Service) EvmApply(params EvmParams) (error, *EvmResult) {
 		}
 		blockContext = params.getBlockContext()
 		chainConfig  = defaultChainConfig()
+		tracer       = logger.NewStructLogger(nil)
 		evmConfig    = vm.Config{
-			Debug:                   false,
-			Tracer:                  nil,
+			Debug:                   true,
+			Tracer:                  tracer,
 			NoBaseFee:               false,
 			EnablePreimageRecording: false,
 			JumpTable:               nil,
@@ -192,6 +194,8 @@ func (s *Service) EvmApply(params EvmParams) (error, *EvmResult) {
 	if vmerr != nil {
 		evmError = vmerr.Error()
 	}
+
+	// TODO: read trace logs tracer.StructLogs()
 
 	return nil, &EvmResult{
 		UsedGas:         uint64(params.GasLimit) - gas,
