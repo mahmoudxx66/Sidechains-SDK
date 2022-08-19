@@ -333,24 +333,29 @@ class SidechainApp @Inject()
 
   // Retrieve information for using a web socket connector
   val communicationClient: WebSocketCommunicationClient = new WebSocketCommunicationClient()
-  val webSocketReconnectionHandler: WebSocketReconnectionHandler = new DefaultWebSocketReconnectionHandler(sidechainSettings.websocket)
+  val webSocketReconnectionHandler: WebSocketReconnectionHandler = new DefaultWebSocketReconnectionHandler(sidechainSettings.websocketClient)
 
-  // Create the web socket connector and configure it
-  val webSocketConnector : WebSocketConnector with WebSocketChannel = new WebSocketConnectorImpl(
-    sidechainSettings.websocket.address,
-    sidechainSettings.websocket.connectionTimeout,
-    communicationClient,
-    webSocketReconnectionHandler
-  )
+  if(sidechainSettings.websocketClient.enabled) {
+    // Create the web socket connector and configure it
+    val webSocketConnector : WebSocketConnector with WebSocketChannel = new WebSocketConnectorImpl(
+      sidechainSettings.websocketClient.address,
+      sidechainSettings.websocketClient.connectionTimeout,
+      communicationClient,
+      webSocketReconnectionHandler
+    )
 
-  // Start the web socket connector
-  val connectorStarted : Try[Unit] = webSocketConnector.start()
+    // Start the web socket connector
+    val connectorStarted : Try[Unit] = webSocketConnector.start()
+    if (connectorStarted.isSuccess)
+      communicationClient.setWebSocketChannel(webSocketConnector)
+    else if (sidechainSettings.withdrawalEpochCertificateSettings.submitterIsEnabled)
+      throw new RuntimeException("Unable to connect to websocket. Certificate submitter needs connection to Mainchain.")
+
+  } else {
+    log.info("Due to the settings, node is not enabled for connections.")
+  }
 
   // If the web socket connector can be started, maybe we would to associate a client to the web socket channel created by the connector
-  if(connectorStarted.isSuccess)
-    communicationClient.setWebSocketChannel(webSocketConnector)
-  else if (sidechainSettings.withdrawalEpochCertificateSettings.submitterIsEnabled)
-    throw new RuntimeException("Unable to connect to websocket. Certificate submitter needs connection to Mainchain.")
 
   // Init Forger with a proper web socket client
   val mainchainNodeChannel = new MainchainNodeChannelImpl(communicationClient, params)
@@ -369,8 +374,8 @@ class SidechainApp @Inject()
   val cswManager: Option[ActorRef] = if (isCSWEnabled) Some(CswManagerRef(sidechainSettings, params, nodeViewHolderRef)) else None
 
   //Websocket server for the Explorer
-  if(sidechainSettings.websocket.wsServer) {
-    val webSocketServerActor: ActorRef = WebSocketServerRef(nodeViewHolderRef,sidechainSettings.websocket.wsServerPort)
+  if(sidechainSettings.websocketServer.wsServer) {
+    val webSocketServerActor: ActorRef = WebSocketServerRef(nodeViewHolderRef,sidechainSettings.websocketServer.wsServerPort)
   }
 
   // Init ForkManager
