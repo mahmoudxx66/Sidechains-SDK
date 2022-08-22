@@ -1,11 +1,10 @@
 package com.horizen.websocket.client
 
-import java.net.URI
-
-import javax.websocket._
+import jakarta.websocket._
 import org.glassfish.tyrus.client.{ClientManager, ClientProperties}
 import scorex.util.ScorexLogging
 
+import java.net.URI
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{Future, Promise}
 import scala.util.Try
@@ -37,7 +36,7 @@ class WebSocketConnectorImpl(bindAddress: String, connectionTimeout: FiniteDurat
     override def onConnectFailure(exception: Exception): Boolean = reconnectionHandler.onConnectionFailed(exception)
   }
 
-  override def isStarted: Boolean =
+  override def isStarted(): Boolean =
     userSession != null && userSession.isOpen
 
   override def start(): Try[Unit] = Try {
@@ -80,14 +79,12 @@ class WebSocketConnectorImpl(bindAddress: String, connectionTimeout: FiniteDurat
 
   override def sendMessage(message: String): Unit = {
     try {
-      userSession.getAsyncRemote().sendText(message, new SendHandler {
-        override def onResult(sendResult: SendResult): Unit = {
-          if (!sendResult.isOK) {
-            log.info("Send message failed.")
-            messageHandler.onSendMessageErrorOccurred(message, sendResult.getException)
-          }
-          else log.info("Message sent")
+      userSession.getAsyncRemote.sendText(message, (sendResult: SendResult) => {
+        if (!sendResult.isOK) {
+          log.info("Send message failed.")
+          messageHandler.onSendMessageErrorOccurred(message, sendResult.getException)
         }
+        else log.info("Message sent")
       }
       )
     } catch {

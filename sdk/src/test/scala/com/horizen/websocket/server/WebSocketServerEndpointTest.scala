@@ -10,6 +10,7 @@ import com.horizen.api.http.SidechainApiMockConfiguration
 import com.horizen.block.SidechainBlock
 import com.horizen.transaction.RegularTransaction
 import com.horizen.utils.CountDownLatchController
+import jakarta.websocket.{ClientEndpointConfig, Endpoint, EndpointConfig, MessageHandler, Session}
 import org.glassfish.tyrus.client.ClientManager
 import org.junit.Assert.{assertArrayEquals, assertEquals, assertFalse, assertTrue}
 import org.junit.{After, Assert, Test}
@@ -22,7 +23,7 @@ import scorex.core.network.NodeViewSynchronizer.ReceivableMessages.{ChangedMempo
 
 import java.net.URI
 import java.util
-import javax.websocket._
+import jakarta.websocket._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}

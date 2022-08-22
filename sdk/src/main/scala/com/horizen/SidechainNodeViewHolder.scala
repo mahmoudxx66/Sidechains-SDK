@@ -70,7 +70,7 @@ class SidechainNodeViewHolder(sidechainSettings: SidechainSettings,
     utxoMerkleTreeProvider, stateStorage, forgerBoxStorage,
     secretStorage, walletBoxStorage, walletTransactionStorage, forgingBoxesInfoStorage, cswDataProvider)
 
-  val maxTxFee = sidechainSettings.wallet.maxTxFee
+  val maxTxFee: Long = sidechainSettings.wallet.maxTxFee
 
   private def semanticBlockValidators(params: NetworkParams): Seq[SemanticBlockValidator] = Seq(new SidechainBlockSemanticValidator(params))
   private def historyBlockValidators(params: NetworkParams): Seq[HistoryBlockValidator] = Seq(
@@ -170,7 +170,7 @@ class SidechainNodeViewHolder(sidechainSettings: SidechainSettings,
                   (rolledBackState, rolledBackWallet) match {
                     case (Success(s), Success(w)) =>
                       log.debug("State and wallet succesfully rolled back")
-                      dumpStorages
+                      dumpStorages()
                       Some((restoredHistory, s, w, restoredMempool))
                     case (Failure(e), _) =>
                       log.error("State roll back failed: ", e)
@@ -212,11 +212,11 @@ class SidechainNodeViewHolder(sidechainSettings: SidechainSettings,
     result
   }
 
-  def dumpStorages: Unit =
+  def dumpStorages(): Unit =
     try {
       val m = getStorageVersions.map{ case(k, v) => {"%-36s".format(k) + ": " + v}}
       m.foreach(x => log.debug(s"${x}"))
-      log.trace(s"    ForgingBoxesInfoStorage vers:    ${forgingBoxesInfoStorage.rollbackVersions.slice(0, 3)}")
+      log.trace(s"    ForgingBoxesInfoStorage vers:    ${forgingBoxesInfoStorage.rollbackVersions().slice(0, 3)}")
     } catch {
       case e: Exception =>
         // can happen during unit test with mocked objects
@@ -302,7 +302,7 @@ class SidechainNodeViewHolder(sidechainSettings: SidechainSettings,
     case newTxs: LocallyGeneratedTransaction[SidechainTypes#SCBT] =>
       newTxs.txs.foreach(tx => {
         if(tx.fee() > maxTxFee)
-          context.system.eventStream.publish(FailedTransaction(tx.asInstanceOf[Transaction].id, new IllegalArgumentException(s"Transaction ${tx.id()} with fee of ${tx.fee()} exceed the predefined MaxFee of ${maxTxFee}"),
+          context.system.eventStream.publish(FailedTransaction(tx.asInstanceOf[Transaction].id, new IllegalArgumentException(s"Transaction ${tx.id()} with fee of ${tx.fee()} exceed the predefined MaxFee of $maxTxFee"),
             immediateFailure = true))
         else
           txModify(tx)
