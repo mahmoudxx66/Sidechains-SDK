@@ -15,7 +15,7 @@ case class WebSocketClientSettings(address: String,
                              enabled: Boolean
                              )
 
-case class WebSocketServerSettings(address: String,
+case class WebSocketServerSettings(
                              wsServer: Boolean = false,
                              wsServerPort: Int = 8025
                             )
