@@ -7,33 +7,56 @@ It is possible to test a SC node or nodes with or without real MC node connectio
 
 **Requirements**
 
-Install Python 3
+1. Install Python 3 anf PIP
+```
+sudo apt install python
+sudo apt-get -y install python3-pip
+```
+2. Install [JetBrains PyCharm Community](https://www.jetbrains.com/pycharm/download) and open qa subproject in it.
+3. Checkout [ZEN project](https://github.com/HorizenOfficial/zen) and execute commands from its README.MD file.
+
 
 **Additional settings**
 
-Setup these environment variables.
-
-Example for Linux environment:
-
+1. Example for Linux:
 ```
-BITCOINCLI="/home/user/zen/zen-cli"
-BITCOIND="/home/user/zen/zend"
-SIDECHAIN_SDK="/home/user/Sidechains-SDK"
+sudo nano /etc/environment
 ```
+2. In this file after Path from the new line put Environment variables:
+```
+BITCOINCLI=/home/yourName/yourProjectDirectory/zen/zen-cli
+BITCOIND=/home/yourName/yourProjectDirectory/zen/zend
+SIDECHAIN_SDK=/home/yourName/yourProjectDirectory/Sidechains-SDK
+```
+change yourName and yourProjectDirectory to the relevant one.
+4. Save file, exit and restart your computer.
+5. Then make sure that environment variables are set:
+```
+echo $BITCOINCLI
+echo $BITCOIND
+echo $SIDECHAIN_SDK
+```
+verify that all path are valid and are referenced to existing files.
+
 
 **Execution**
-
-You can run all tests using command.
-
+1. Install Maven, go to root folder of Sidechain-SDK and run Maven to clean previous and build a new JAR
 ```
+   cd ..
+   mvn clean package -Dmaven.test.skip=true
+```
+2. You can run all tests using command.
+```
+cd qa
 python run_sc_tests.py
 ```
-    
 Or run individual test using command
-
 ```
+cd qa
 python <test.py>
 ```
+replacing <test.py> with the name of test that you want to execute.
+
 
 **Template configuration files**
 
