@@ -13,4 +13,11 @@ contract TestERC20 is ERC20, ERC20Burnable, Ownable {
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
+
+    function batchTransfer(address[] memory addresses, uint256 amount) public {
+        uint256 len = addresses.length;
+        for (uint256 i = 0; i<len; i++){
+            transfer(addresses[i], amount);
+        }
+    }
 }

@@ -2,27 +2,27 @@ import * as dotenv from "dotenv";
 
 import { HardhatUserConfig } from "hardhat/config";
 import "@typechain/hardhat";
+import "@typechain/ethers-v5";
 import "solidity-coverage";
 import "./tasks/deploy";
+import "./tasks/gen-wallets";
+import "./tasks/check-provider";
+import "./tasks/send-initial-tokens";
 
 dotenv.config();
 
 const networks: any = {};
-if (process.env.PRIVATE_KEY) {
-  console.log(`${process.env.RPC_ENDPOINT_URL}`);
-
+if (process.env.SCNODE_WALLET_SEED_DEV1) {
+  const rpcurl = `http://${process.env.NGINX_HTPASSWD}@127.0.0.1/dev1/ethv1`;
   networks["evm-benchmark"] = {
-    url: `${process.env.RPC_ENDPOINT_URL}`,
-    accounts: [`0x${process.env.PRIVATE_KEY}`],
-    gas: 100000,
-    gasPrice: 10,
+    url: rpcurl,
+    accounts: [process.env.SCNODE_WALLET_SEED_DEV1],
   };
 }
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "evm-benchmark",
   solidity: "0.8.4",
-  networks
+  networks,
 };
 
 export default config;

@@ -32,6 +32,7 @@ export interface TestERC20Interface extends utils.Interface {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "batchTransfer(address[],uint256)": FunctionFragment;
     "burn(uint256)": FunctionFragment;
     "burnFrom(address,uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
@@ -53,6 +54,7 @@ export interface TestERC20Interface extends utils.Interface {
       | "allowance"
       | "approve"
       | "balanceOf"
+      | "batchTransfer"
       | "burn"
       | "burnFrom"
       | "decimals"
@@ -80,6 +82,10 @@ export interface TestERC20Interface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "balanceOf",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "batchTransfer",
+    values: [PromiseOrValue<string>[], PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "burn",
@@ -133,6 +139,10 @@ export interface TestERC20Interface extends utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "batchTransfer",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burnFrom", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
@@ -257,6 +267,12 @@ export interface TestERC20 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    batchTransfer(
+      addresses: PromiseOrValue<string>[],
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     burn(
       amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -336,6 +352,12 @@ export interface TestERC20 extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  batchTransfer(
+    addresses: PromiseOrValue<string>[],
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   burn(
     amount: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -414,6 +436,12 @@ export interface TestERC20 extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    batchTransfer(
+      addresses: PromiseOrValue<string>[],
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     burn(
       amount: PromiseOrValue<BigNumberish>,
@@ -526,6 +554,12 @@ export interface TestERC20 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    batchTransfer(
+      addresses: PromiseOrValue<string>[],
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     burn(
       amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -604,6 +638,12 @@ export interface TestERC20 extends BaseContract {
     balanceOf(
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    batchTransfer(
+      addresses: PromiseOrValue<string>[],
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     burn(

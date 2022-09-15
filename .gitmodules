@@ -1,0 +1,4 @@
+[submodule "qa/benchmark/bleth"]
+	path = qa/benchmark/bleth
+	url = git@github.com:rocknitive/bleth.git
+	branch = dev
