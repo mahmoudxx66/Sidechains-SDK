@@ -21,10 +21,7 @@ task(
     }
 
     const signers = await hre.ethers.getSigners();
-    console.log(
-      "Signers:",
-      signers.map((x) => x.address)
-    );
+    console.log("Signer:", signers.map((x) => x.address)[0]);
 
     await hre.run("clean");
     await hre.run("compile");
@@ -35,6 +32,7 @@ task(
       signers[0]
     );
 
+    console.info("Deploying", contractFileNamePrefix);
     const testToken = await TestToken.deploy(args.name, args.symbol);
     await testToken.deployed();
 
