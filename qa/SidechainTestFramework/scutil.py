@@ -7,7 +7,7 @@ from decimal import Decimal
 from SidechainTestFramework.sc_boostrap_info import MCConnectionInfo, SCBootstrapInfo, Account, AccountKey, \
     VrfAccount, SchnorrAccount, CertificateProofInfo, SCNodeConfiguration, ProofKeysPaths, \
     LARGE_WITHDRAWAL_EPOCH_LENGTH, DEFAULT_API_KEY, SCNetworkConfiguration
-
+from SidechainTestFramework.sidechainauthproxy import SidechainAuthServiceProxy
 import subprocess
 import time
 import socket
@@ -15,7 +15,8 @@ from contextlib import closing
 
 from SidechainTestFramework.sidechainauthproxy import SidechainAuthServiceProxy
 from test_framework.mc_test.mc_test import generate_random_field_element_hex, get_field_element_with_padding
-from test_framework.util import get_spendable, swap_bytes, assert_equal, initialize_new_sidechain_in_mainchain
+from test_framework.util import initialize_new_sidechain_in_mainchain, get_spendable, swap_bytes, assert_equal
+from performance.perf_data import PerformanceData
 
 WAIT_CONST = 1
 
@@ -231,7 +232,6 @@ def generate_vrf_secrets(seed, number_of_vrf_keys):
         vrf_keys.append(VrfAccount(secret["vrfSecret"], secret["vrfPublicKey"]))
     return vrf_keys
 
-
 def generate_account_proposition(seed, number_of_acc_props):
     acc_props = []
     secrets = []
@@ -358,8 +358,6 @@ Parameters:
  - bootstrap_info: an instance of SCBootstrapInfo (see sc_bootstrap_info.py)
  - websocket_config: an instance of MCConnectionInfo (see sc_boostrap_info.py)
 """
-
-
 def initialize_sc_datadir(dirname, n, bootstrap_info=SCBootstrapInfo, sc_node_config=SCNodeConfiguration(),
                           log_info=LogInfo(), rest_api_timeout=DEFAULT_REST_API_TIMEOUT):
     apiAddress = "127.0.0.1"
@@ -534,8 +532,6 @@ def initialize_sc_chain_clean(test_dir, num_nodes, genesis_secrets, genesis_info
 def get_websocket_configuration(index, array_of_MCConnectionInfo):
     return array_of_MCConnectionInfo[index] if index < len(array_of_MCConnectionInfo) else MCConnectionInfo()
 
-
-
 def get_lib_separator():
     lib_separator = ":"
     if sys.platform.startswith('win'):
@@ -550,10 +546,7 @@ EVM_APP_BINARY = get_examples_dir() + "/evmapp/target/sidechains-sdk-evmapp-0.5.
 
 
 
-
-def start_sc_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=None, print_output_to_file=False,
-                  auth_api_key=None):
-
+def start_sc_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=None, print_output_to_file=False):
     """
     Start a SC node and returns API connection to it
     """
@@ -1205,18 +1198,14 @@ ZENNY_TO_WEI_MULTIPLIER = 10 ** 10
 # 10^8
 from test_framework.util import COIN
 
-
 def convertZenToZennies(valueInZen):
     return int(round(valueInZen * COIN))
-
 
 def convertZenniesToWei(valueInZennies):
     return int(round(ZENNY_TO_WEI_MULTIPLIER * valueInZennies))
 
-
 def convertZenToWei(valueInZen):
     return convertZenniesToWei(convertZenToZennies(valueInZen))
-
 
 def convertWeiToZen(valueInWei):
     valueInZen = (valueInWei / ZENNY_TO_WEI_MULTIPLIER) / COIN
@@ -1224,7 +1213,6 @@ def convertWeiToZen(valueInWei):
         return 0
     else:
         return valueInZen
-
 
 def convertZenniesToZen(valueInZennies):
     return (valueInZennies / COIN)
@@ -1320,6 +1308,21 @@ def computeForgedTxFee(sc_node, tx_hash, tracing_on=False):
         logging.info("totalFee = {} (forgersPoolFee = {}, forgerTip = {}".format(totalTxFee, forgersPoolFee, forgerTip))
 
     return totalTxFee, forgersPoolFee, forgerTip
+
+def deserialize_perf_test_json(json_file):
+    with open(json_file) as f:
+        json_data = json.load(f)
+    with open('./performance/perf_test_schema.json', 'r') as schema_file:
+        schema = json.load(schema_file)
+    try:
+        validate(instance=json_data, schema=schema)
+    except jsonschema.exceptions.ValidationError as error:
+        logging.error("Failed to validate perf_test.json {}".format(error))
+        raise error
+
+    perf_data: dict[str, PerformanceData] = json_data
+    return perf_data
+
 
 def get_resources_dir():
     return os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'resources'))
