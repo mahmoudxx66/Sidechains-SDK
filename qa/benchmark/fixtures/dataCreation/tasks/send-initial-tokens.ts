@@ -65,7 +65,7 @@ const sendERC20 = async (
 
   const txs: TxInfo[] = [];
 
-  const chunkSize = 100;
+  const chunkSize = 250;
   for (let i = 0; i < wallets.length; i += chunkSize) {
     const chunk = wallets.slice(i, i + chunkSize).map((x) => x.address);
     console.log(

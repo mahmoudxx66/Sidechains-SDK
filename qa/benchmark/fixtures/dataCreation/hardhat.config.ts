@@ -16,7 +16,7 @@ if (process.env.SCNODE_WALLET_SEED_DEV1) {
   const rpcurl = `http://${process.env.NGINX_HTPASSWD}@127.0.0.1/dev1/ethv1`;
   networks["evm-benchmark"] = {
     url: rpcurl,
-    accounts: [process.env.SCNODE_WALLET_SEED_DEV1],
+    accounts: [process.env.SCNODE_WALLET_GENESIS_SECRETS_DEV1.substring(3, 67)],
   };
 }
 
