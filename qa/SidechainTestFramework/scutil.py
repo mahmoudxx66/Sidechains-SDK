@@ -1,12 +1,19 @@
 import logging
 import os
+import pprint
 import sys
 import json
 
+import psutil
+import multiprocessing
 from decimal import Decimal
 from SidechainTestFramework.sc_boostrap_info import MCConnectionInfo, SCBootstrapInfo, Account, AccountKey, \
     VrfAccount, SchnorrAccount, CertificateProofInfo, SCNodeConfiguration, ProofKeysPaths, \
     LARGE_WITHDRAWAL_EPOCH_LENGTH, DEFAULT_API_KEY, SCNetworkConfiguration
+import jsonschema
+from jsonschema.validators import validate
+from SidechainTestFramework.sc_boostrap_info import MCConnectionInfo, SCBootstrapInfo, SCNetworkConfiguration, Account, \
+    VrfAccount, CertificateProofInfo, SCNodeConfiguration, ProofKeysPaths, LARGE_WITHDRAWAL_EPOCH_LENGTH, AccountKey
 from SidechainTestFramework.sidechainauthproxy import SidechainAuthServiceProxy
 import subprocess
 import time
@@ -438,6 +445,7 @@ def initialize_sc_datadir(dirname, n, bootstrap_info=SCBootstrapInfo, sc_node_co
         "RESTRICT_FORGERS": ("true" if sc_node_config.forger_options.restrict_forgers else "false"),
         "ALLOWED_FORGERS_LIST": sc_node_config.forger_options.allowed_forgers,
         "MAX_PACKET_SIZE": DEFAULT_MAX_PACKET_SIZE
+        "BLOCK_RATE": sc_node_config.block_rate
     }
     config = config.replace("'", "")
     config = config.replace("NEW_LINE", "\n")
@@ -498,6 +506,7 @@ def initialize_default_sc_datadir(dirname, n, api_key):
         "RESTRICT_FORGERS": "false",
         "ALLOWED_FORGERS_LIST": [],
         "MAX_PACKET_SIZE": DEFAULT_MAX_PACKET_SIZE
+        "BLOCK_RATE": 120
     }
 
     configsData.append({
@@ -546,16 +555,27 @@ EVM_APP_BINARY = get_examples_dir() + "/evmapp/target/sidechains-sdk-evmapp-0.5.
 
 
 
-def start_sc_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=None, print_output_to_file=False):
+def start_sc_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=None, print_output_to_file=False,
+                  auth_api_key=None, use_multiprocessing=False, processor=None):
+    if use_multiprocessing:
+        if i == 0:
+            processors = [i, i+1]
+        else:
+            first_available_process = i * 2
+            processors = [first_available_process, first_available_process + 1]
+        p = psutil.Process()
+        p.cpu_affinity(processors)
+        print(f"Processes #{processors}: Set Node{i} affinity to {processors}, Node{i} affinity now {p.cpu_affinity()}",
+              flush=True)
     """
     Start a SC node and returns API connection to it
     """
     # Will we have  extra args for SC too ?
     datadir = os.path.join(dirname, "sc_node" + str(i))
     lib_separator = ":"
-
     if sys.platform.startswith('win'):
         lib_separator = ";"
+    examples_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..', 'examples'))
     if binary is None:
         binary = SIMPLE_APP_BINARY
     #        else if platform.system() == 'Linux':
@@ -588,6 +608,29 @@ def start_sc_node(i, dirname, extra_args=None, rpchost=None, timewait=None, bina
     proxy.dataDir = datadir  # store the name of the datadir
     return proxy
 
+
+def start_sc_nodes_with_multiprocessing(num_nodes, dirname, extra_args=None, rpchost=None, binary=None, print_output_to_file=False):
+    """
+    Start multiple SC clients, return connections to them
+    """
+    if extra_args is None: extra_args = [None for i in range(num_nodes)]
+    if binary is None: binary = [None for i in range(num_nodes)]
+
+    processors: int = multiprocessing.Pool()._processes
+    processors_available = processors/2
+    print(f"Available processors (2 threads each): {processors_available}")
+    print(f"Number of Nodes: {num_nodes}")
+    if processors_available / num_nodes < 1:
+        print("WARNING: Number of Nodes exceeds available Processors")
+
+    nodes = [
+        start_sc_node(i, dirname, extra_args[i], rpchost, binary=binary[i], print_output_to_file=print_output_to_file,
+                      use_multiprocessing=True, processor=i)
+        for i in range(num_nodes)]
+
+    wait_for_sc_node_initialization(nodes)
+
+    return nodes
 
 def start_sc_nodes(num_nodes, dirname, extra_args=None, rpchost=None, binary=None, print_output_to_file=False,
                    auth_api_key=DEFAULT_API_KEY):
@@ -881,11 +924,8 @@ network: {
  Output:
  - bootstrap information of the sidechain nodes. An instance of SCBootstrapInfo (see sc_boostrap_info.py)    
 """
-
-
 def bootstrap_sidechain_nodes(options, network=SCNetworkConfiguration,
                               block_timestamp_rewind=DefaultBlockTimestampRewind, blockversion=DefaultBlockVersion):
-
     log_info = LogInfo(options.logfilelevel, options.logconsolelevel)
     logging.info(options)
     total_number_of_sidechain_nodes = len(network.sc_nodes_configuration)
@@ -1025,7 +1065,6 @@ Parameters:
  - rest_api_timeout: optional, SC node api timeout, 5 seconds by default.
  
 """
-
 
 def bootstrap_sidechain_node(dirname, n, bootstrap_info, sc_node_configuration,
                              log_info=LogInfo(), rest_api_timeout=DEFAULT_REST_API_TIMEOUT):
