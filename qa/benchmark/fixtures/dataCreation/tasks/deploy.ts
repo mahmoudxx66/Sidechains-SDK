@@ -2,6 +2,7 @@ import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import { writeFile } from "fs/promises";
 import { AllowedTokenTypes, TokenInfo, TokenType } from "./helpers/types";
+import { generate_blocks } from "./helpers/generate-block";
 interface DeploymentArguments {
   type: string;
   name: string;
@@ -34,6 +35,7 @@ task(
 
     console.info("Deploying", contractFileNamePrefix);
     const testToken = await TestToken.deploy(args.name, args.symbol);
+    generate_blocks(1);
     await testToken.deployed();
 
     console.info(`${contractFileNamePrefix} deployed at:`);

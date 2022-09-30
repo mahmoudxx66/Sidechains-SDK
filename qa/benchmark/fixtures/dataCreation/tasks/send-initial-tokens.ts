@@ -3,6 +3,7 @@ import "@nomiclabs/hardhat-waffle";
 import { readFile, writeFile } from "fs/promises";
 import { TokenInfo, TxInfo, WalletInfo } from "./helpers/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { generate_blocks } from "./helpers/generate-block";
 
 interface TaskArguments {
   tokenFile: string;
@@ -75,6 +76,7 @@ const sendERC20 = async (
     );
     const tx = await TestToken.batchTransfer(chunk, amount);
     txs.push({ hash: tx.hash });
+    generate_blocks(1);
     await tx.wait();
   }
   return txs;
