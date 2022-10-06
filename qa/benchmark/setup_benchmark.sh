@@ -9,7 +9,6 @@ LOCUST_DIR="${BASEDIR}/bleth"
 WALLET_FILE="${LOCUST_DIR}/wallets.json"
 CONTRACT_FILE="${LOCUST_DIR}/token.json"
 TRANSACTIONS_FILE="${LOCUST_DIR}/tx_out.json"
-LOCUST_ENV_FILE="${LOCUST_DIR}/env.json"
 
 WALLET_AMOUNT="1000"
 
@@ -41,4 +40,3 @@ npx hardhat deploy --network evm-benchmark --name "EVMTestToken" --symbol "ETST"
 echo "sending tokens to addresses...";
 npx hardhat send-initial-tokens --network evm-benchmark --token-file "${CONTRACT_FILE}" --wallet-file "${WALLET_FILE}" --amount 100 --out-file "${TRANSACTIONS_FILE}" || exit 1;
 
-./start_locust.sh full
