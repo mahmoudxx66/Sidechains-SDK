@@ -5,4 +5,7 @@ def allTransactions(sidechainNode, format = True):
     j = {"format": format }
     request = json.dumps(j)
     response = sidechainNode.transaction_allTransactions(request)
-    return response["result"]
+    if "error" in response:
+        print(response)
+    else:
+        return response["result"]

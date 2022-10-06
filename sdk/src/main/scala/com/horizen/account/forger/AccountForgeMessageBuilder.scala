@@ -319,7 +319,9 @@ class AccountForgeMessageBuilder(
     // no checks of the block size here, these txes are the candidates and their inclusion
     // will be attempted by forger
 
-    nodeView.pool.take(nodeView.pool.size).toSeq
+    // FIXME
+    // nodeView.pool.take(nodeView.pool.size).toSeq
+    nodeView.pool.take(500).toSeq
   }
 
   override def getOmmersSize(ommers: Seq[Ommer[AccountBlockHeader]]): Int = {

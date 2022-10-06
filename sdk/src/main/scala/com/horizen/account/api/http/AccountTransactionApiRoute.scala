@@ -63,7 +63,7 @@ case class AccountTransactionApiRoute(override val settings: RESTApiSettings,
 
 
   override val route: Route = pathPrefix("transaction") {
-    allTransactions ~ sendCoinsToAddress ~ createEIP1559Transaction ~ createLegacyTransaction ~ sendRawTransaction ~
+    allTransactions ~ sendCoinsToAddress ~ createCoreTransaction ~ createEIP1559Transaction ~ createLegacyTransaction ~ sendRawTransaction ~
       signTransaction ~ makeForgerStake ~ withdrawCoins ~ spendForgingStake ~ createSmartContract ~ allWithdrawalRequests ~ allForgingStakes
   }
 
@@ -172,6 +172,67 @@ case class AccountTransactionApiRoute(override val settings: RESTApiSettings,
                   "",
                   null)
                 validateAndSendTransaction(signTransactionWithSecret(secret, tmpTx))
+              }
+              response
+            case None =>
+              ApiResponseUtil.toResponse(ErrorInsufficientBalance("ErrorInsufficientBalance", JOptional.empty()))
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Create and sign a core transaction, specifying regular outputs and fee. Search for and spend proper amount of regular coins. Then validate the transaction.
+   * Return the new transaction as a hex string if format = false, otherwise its JSON representation.
+   */
+  def createCoreTransaction: Route = (post & path("createCoreTransaction")) {
+    withAuth {
+      entity(as[ReqSendCoinsToAddress]) { body =>
+        // lock the view and try to create EvmTransaction
+        applyOnNodeView { sidechainNodeView =>
+          val valueInWei = ZenWeiConverter.convertZenniesToWei(body.value)
+          val destAddress = body.to
+          // TODO actual gas implementation
+          var gasLimit = GasUtil.TxGas
+          var gasPrice = sidechainNodeView.getNodeHistory.getBestBlock.header.baseFee
+
+          if (body.gasInfo.isDefined) {
+            gasPrice = body.gasInfo.get.maxFeePerGas
+            gasLimit = body.gasInfo.get.gasLimit
+          }
+
+          // check if the fromAddress is either empty or it fits and the value is high enough
+          val txCost = valueInWei.add(gasPrice.multiply(gasLimit))
+
+          val secret = getFittingSecret(sidechainNodeView, body.from, txCost)
+          secret match {
+            case Some(secret) =>
+              val nonce = body.nonce.getOrElse(sidechainNodeView.getNodeState.getNonce(secret.publicImage.address))
+              val isEIP155 = body.EIP155.getOrElse(false)
+              val response = if (isEIP155) {
+                val tmpTx = new EthereumTransaction(
+                  destAddress,
+                  nonce,
+                  gasPrice,
+                  gasLimit,
+                  valueInWei,
+                  "",
+                  new SignatureData(
+                    EthereumTransactionUtils.convertToBytes(params.chainId),
+                    Array[Byte](0),
+                    Array[Byte](0)))
+                ApiResponseUtil.toResponse(rawTransactionResponseRepresentation(signTransactionEIP155WithSecret(secret, tmpTx)))
+              } else {
+                val tmpTx = new EthereumTransaction(
+                  destAddress,
+                  nonce,
+                  gasPrice,
+                  gasLimit,
+                  valueInWei,
+                  "",
+                  null)
+                ApiResponseUtil.toResponse(rawTransactionResponseRepresentation(signTransactionEIP155WithSecret(secret, tmpTx)))
               }
               response
             case None =>
