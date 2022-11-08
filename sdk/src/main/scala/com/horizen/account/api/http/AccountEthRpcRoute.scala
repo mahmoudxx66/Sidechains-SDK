@@ -13,12 +13,12 @@ import com.horizen.account.state.MessageProcessor
 import com.horizen.account.storage.AccountStateMetadataStorage
 import com.horizen.api.http.JacksonSupport._
 import com.horizen.api.http.{SidechainApiResponse, SidechainApiRoute}
-import com.horizen.evm.LevelDBDatabase
 import com.horizen.node.NodeWalletBase
 import com.horizen.params.NetworkParams
 import com.horizen.serialization.SerializationUtil
 import com.horizen.utils.ClosableResourceHandler
 import com.horizen.{SidechainSettings, SidechainTypes}
+import io.horizen.evm.LevelDBDatabase
 import sparkz.core.settings.RESTApiSettings
 import scorex.util.ScorexLogging
 import sparkz.core.api.http.ApiDirectives

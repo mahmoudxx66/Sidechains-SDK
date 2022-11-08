@@ -1,8 +1,8 @@
 package com.horizen.account.receipt
 
-import com.horizen.evm.interop.EvmLog
-import com.horizen.evm.utils.Address
 import com.horizen.utils.{ByteArrayWrapper, BytesUtils}
+import io.horizen.evm.interop.EvmLog
+import io.horizen.evm.utils.Address
 import sparkz.core.serialization.{BytesSerializable, SparkzSerializer}
 import scorex.util.serialization.{Reader, Writer}
 

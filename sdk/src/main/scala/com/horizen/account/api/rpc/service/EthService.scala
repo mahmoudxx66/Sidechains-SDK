@@ -18,11 +18,11 @@ import com.horizen.account.utils.EthereumTransactionDecoder
 import com.horizen.account.wallet.AccountWallet
 import com.horizen.api.http.SidechainTransactionActor.ReceivableMessages.BroadcastTransaction
 import com.horizen.chain.SidechainBlockInfo
-import com.horizen.evm.interop.TraceParams
-import com.horizen.evm.utils.{Address, Hash}
 import com.horizen.params.NetworkParams
 import com.horizen.transaction.exception.TransactionSemanticValidityException
 import com.horizen.utils.{ClosableResourceHandler, TimeToEpochUtils}
+import io.horizen.evm.interop.TraceParams
+import io.horizen.evm.utils.{Address, Hash}
 import org.web3j.crypto.Sign.SignatureData
 import org.web3j.crypto.{SignedRawTransaction, TransactionEncoder}
 import org.web3j.utils.Numeric

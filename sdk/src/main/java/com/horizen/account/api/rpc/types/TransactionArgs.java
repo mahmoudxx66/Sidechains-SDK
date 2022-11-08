@@ -8,7 +8,7 @@ import com.horizen.account.proposition.AddressProposition;
 import com.horizen.account.state.Message;
 import com.horizen.account.transaction.EthereumTransaction;
 import com.horizen.account.utils.BigIntegerUtil;
-import com.horizen.evm.utils.Address;
+import io.horizen.evm.utils.Address;
 import org.web3j.crypto.Sign;
 import org.web3j.utils.Numeric;
 

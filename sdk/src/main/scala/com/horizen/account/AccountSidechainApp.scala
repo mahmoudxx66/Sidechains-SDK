@@ -20,7 +20,6 @@ import com.horizen.api.http._
 import com.horizen.block.SidechainBlockBase
 import com.horizen.certificatesubmitter.network.CertificateSignaturesManagerRef
 import com.horizen.consensus.ConsensusDataStorage
-import com.horizen.evm.LevelDBDatabase
 import com.horizen.fork.ForkConfigurator
 import com.horizen.node.NodeWalletBase
 import com.horizen.secret.SecretSerializer
@@ -28,6 +27,7 @@ import com.horizen.storage._
 import com.horizen.storage.leveldb.VersionedLevelDbStorageAdapter
 import com.horizen.transaction._
 import com.horizen.utils.{BytesUtils, Pair}
+import io.horizen.evm.LevelDBDatabase
 import sparkz.core.api.http.ApiRoute
 import sparkz.core.serialization.SparkzSerializer
 import sparkz.core.transaction.Transaction

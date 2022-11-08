@@ -4,9 +4,9 @@ import com.horizen.account.utils.FeeUtils
 import com.horizen.account.proposition.AddressProposition
 import com.horizen.account.storage.AccountStateMetadataStorageView
 import com.horizen.account.utils.Account
-import com.horizen.evm.utils.Hash
-import com.horizen.evm.{MemoryDatabase, StateDB}
 import com.horizen.utils.{BytesUtils, ClosableResourceHandler}
+import io.horizen.evm.{MemoryDatabase, StateDB}
+import io.horizen.evm.utils.Hash
 import org.junit.Assert.assertEquals
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.web3j.abi.datatypes.Type

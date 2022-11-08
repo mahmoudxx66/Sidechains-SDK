@@ -8,10 +8,10 @@ import com.horizen.account.api.rpc.handler.RpcException;
 import com.horizen.account.api.rpc.request.RpcRequest;
 import com.horizen.account.api.rpc.utils.RpcCode;
 import com.horizen.account.api.rpc.utils.RpcError;
-import com.horizen.evm.utils.Address;
-import com.horizen.evm.utils.BigIntDeserializer;
-import com.horizen.evm.utils.BigIntSerializer;
-import com.horizen.evm.utils.Hash;
+import io.horizen.evm.utils.Address;
+import io.horizen.evm.utils.BigIntDeserializer;
+import io.horizen.evm.utils.BigIntSerializer;
+import io.horizen.evm.utils.Hash;
 import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.InvocationTargetException;

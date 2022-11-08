@@ -7,13 +7,13 @@ import com.horizen.account.proposition.AddressProposition
 import com.horizen.account.receipt.{EthereumConsensusDataReceipt, LogsBloom}
 import com.horizen.block._
 import com.horizen.consensus.ForgingStakeInfo
-import com.horizen.evm.TrieHasher
 import com.horizen.proof.{Signature25519, VrfProof}
 import com.horizen.secret.PrivateKey25519
 import com.horizen.serialization.Views
 import com.horizen.utils.{BytesUtils, MerklePath}
 import com.horizen.validation.InconsistentSidechainBlockDataException
 import com.horizen.{SidechainTypes, account}
+import io.horizen.evm.TrieHasher
 import sparkz.core.block.Block
 import scorex.util.ScorexLogging
 import sparkz.core.utils.SparkzEncoding

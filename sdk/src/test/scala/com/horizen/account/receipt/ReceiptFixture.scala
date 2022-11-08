@@ -1,9 +1,8 @@
 package com.horizen.account.receipt
 
-
-import com.horizen.evm.interop.EvmLog
-import com.horizen.evm.utils.{Address, Hash}
 import com.horizen.utils.BytesUtils
+import io.horizen.evm.interop.EvmLog
+import io.horizen.evm.utils.{Address, Hash}
 import scorex.crypto.hash.Keccak256
 
 import java.math.BigInteger

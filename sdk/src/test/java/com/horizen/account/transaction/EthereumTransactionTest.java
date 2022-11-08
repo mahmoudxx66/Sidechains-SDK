@@ -4,7 +4,7 @@ import com.horizen.account.proof.SignatureSecp256k1;
 import com.horizen.account.proposition.AddressProposition;
 import com.horizen.account.utils.EthereumTransactionDecoder;
 import com.horizen.account.utils.EthereumTransactionUtils;
-import com.horizen.evm.TrieHasher;
+import io.horizen.evm.TrieHasher;
 import com.horizen.transaction.exception.TransactionSemanticValidityException;
 import com.horizen.utils.BytesUtils;
 import org.junit.Before;

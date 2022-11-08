@@ -2,8 +2,8 @@ package com.horizen.account.receipt
 
 import scorex.crypto.hash.Keccak256
 import com.horizen.account.receipt.LogsBloom.BLOOM_FILTER_LENGTH
-import com.horizen.evm.interop.EvmLog
 import com.horizen.utils.BytesUtils
+import io.horizen.evm.interop.EvmLog
 import sparkz.core.serialization.{BytesSerializable, SparkzSerializer}
 import scorex.util.serialization.{Reader, Writer}
 

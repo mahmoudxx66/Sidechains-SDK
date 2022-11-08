@@ -1,7 +1,7 @@
 package com.horizen.account.event;
 
-import com.horizen.evm.interop.EvmLog;
-import com.horizen.evm.utils.Hash;
+import io.horizen.evm.interop.EvmLog;
+import io.horizen.evm.utils.Hash;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.TypeEncoder;
 import org.web3j.abi.TypeReference;
@@ -72,7 +72,7 @@ public class EthereumEvent {
      * @throws IOException
      */
     private static EvmLog createEvmLog(Address contractAddress, Function eventFunction, Boolean anonymous) throws IOException {
-        var address = com.horizen.evm.utils.Address.FromBytes(Numeric.hexStringToByteArray(contractAddress.getValue()));
+        var address = io.horizen.evm.utils.Address.FromBytes(Numeric.hexStringToByteArray(contractAddress.getValue()));
         List<Hash> topics = new ArrayList<>();
         ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
         var outputParameters = eventFunction.getOutputParameters();

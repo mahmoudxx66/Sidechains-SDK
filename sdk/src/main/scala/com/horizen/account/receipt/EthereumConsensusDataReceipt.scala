@@ -3,8 +3,8 @@ package com.horizen.account.receipt
 import com.horizen.account.receipt.EthereumConsensusDataReceipt.ReceiptStatus.ReceiptStatus
 import com.horizen.account.receipt.EthereumConsensusDataReceipt.ReceiptStatus
 import com.horizen.account.receipt.ReceiptTxType.ReceiptTxType
-import com.horizen.evm.interop.EvmLog
 import com.horizen.utils.BytesUtils
+import io.horizen.evm.interop.EvmLog
 import org.web3j.rlp._
 
 import java.math.BigInteger

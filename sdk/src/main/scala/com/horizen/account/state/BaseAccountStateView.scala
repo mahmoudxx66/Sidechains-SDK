@@ -1,7 +1,7 @@
 package com.horizen.account.state
 
-import com.horizen.evm.ResourceHandle
-import com.horizen.evm.interop.EvmLog
+import io.horizen.evm.ResourceHandle
+import io.horizen.evm.interop.EvmLog
 
 import java.math.BigInteger
 

@@ -11,12 +11,12 @@ import com.horizen.account.transaction.EthereumTransaction
 import com.horizen.account.utils._
 import com.horizen.block.{MainchainBlockReferenceData, MainchainTxForwardTransferCrosschainOutput, MainchainTxSidechainCreationCrosschainOutput, WithdrawalEpochCertificate}
 import com.horizen.consensus.{ConsensusEpochNumber, ForgingStakeInfo}
-import com.horizen.evm.interop.{EvmLog, ProofAccountResult}
-import com.horizen.evm.{ResourceHandle, StateDB, StateStorageStrategy}
 import com.horizen.proposition.{PublicKey25519Proposition, VrfPublicKey}
 import com.horizen.state.StateView
 import com.horizen.transaction.mainchain.{ForwardTransfer, SidechainCreation}
 import com.horizen.utils.{BytesUtils, WithdrawalEpochInfo}
+import io.horizen.evm.interop.{EvmLog, ProofAccountResult}
+import io.horizen.evm.{ResourceHandle, StateDB, StateStorageStrategy}
 import sparkz.core.VersionTag
 import scorex.util.ScorexLogging
 

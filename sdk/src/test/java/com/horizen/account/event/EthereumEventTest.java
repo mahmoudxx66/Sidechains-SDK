@@ -1,6 +1,6 @@
 package com.horizen.account.event;
 
-import com.horizen.evm.interop.EvmLog;
+import io.horizen.evm.interop.EvmLog;
 import org.junit.Test;
 import org.web3j.abi.TypeEncoder;
 import org.web3j.abi.datatypes.Address;

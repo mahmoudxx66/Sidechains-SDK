@@ -12,7 +12,6 @@ import com.horizen.account.transaction.AccountTransaction
 import com.horizen.account.validation.{BaseFeeBlockValidator, ChainIdBlockSemanticValidator}
 import com.horizen.account.wallet.AccountWallet
 import com.horizen.consensus._
-import com.horizen.evm.Database
 import com.horizen.node.NodeWalletBase
 import com.horizen.params.NetworkParams
 import com.horizen.proof.Proof
@@ -20,6 +19,7 @@ import com.horizen.proposition.Proposition
 import com.horizen.storage.{SidechainSecretStorage, SidechainStorageInfo}
 import com.horizen.validation.{HistoryBlockValidator, SemanticBlockValidator}
 import com.horizen.{AbstractSidechainNodeViewHolder, AbstractState, SidechainSettings, SidechainTypes}
+import io.horizen.evm.Database
 import scorex.util.ModifierId
 import sparkz.core.NodeViewHolder.ReceivableMessages.LocallyGeneratedTransaction
 import sparkz.core.transaction.state.TransactionValidation

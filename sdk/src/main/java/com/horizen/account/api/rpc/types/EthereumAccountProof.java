@@ -1,7 +1,7 @@
 package com.horizen.account.api.rpc.types;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.horizen.evm.interop.ProofAccountResult;
+import io.horizen.evm.interop.ProofAccountResult;
 import com.horizen.serialization.Views;
 import org.web3j.utils.Numeric;
 

@@ -1,9 +1,8 @@
 package com.horizen.account.state;
 
 import com.horizen.account.block.AccountBlockHeader;
-import com.horizen.evm.interop.EvmContext;
-import com.horizen.evm.interop.EvmResult;
-import com.horizen.evm.interop.TraceParams;
+import io.horizen.evm.interop.EvmResult;
+import io.horizen.evm.interop.TraceParams;
 
 import java.math.BigInteger;
 

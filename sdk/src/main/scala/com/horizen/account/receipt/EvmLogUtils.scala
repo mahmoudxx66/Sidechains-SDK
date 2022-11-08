@@ -1,8 +1,7 @@
 package com.horizen.account.receipt
 
-
-import com.horizen.evm.interop.EvmLog
-import com.horizen.evm.utils.{Address, Hash}
+import io.horizen.evm.interop.EvmLog
+import io.horizen.evm.utils.{Address, Hash}
 import org.web3j.rlp.{RlpDecoder, RlpEncoder, RlpList, RlpString, RlpType}
 import sparkz.core.serialization.SparkzSerializer
 import scorex.util.serialization.{Reader, Writer}

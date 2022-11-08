@@ -6,11 +6,11 @@ import com.horizen.account.proof.SignatureSecp256k1
 import com.horizen.account.proposition.AddressProposition
 import com.horizen.account.state.ForgerStakeMsgProcessor.{AddNewStakeCmd, GetListOfForgersCmd, RemoveStakeCmd}
 import com.horizen.account.utils.ZenWeiConverter
-import com.horizen.evm.interop.EvmLog
 import com.horizen.fixtures.StoreFixture
 import com.horizen.params.NetworkParams
 import com.horizen.proposition.{PublicKey25519Proposition, VrfPublicKey}
 import com.horizen.utils.{ByteArrayWrapper, BytesUtils, ClosableResourceHandler}
+import io.horizen.evm.interop.EvmLog
 import org.junit.Assert._
 import org.junit._
 import org.mockito._

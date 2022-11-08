@@ -1,8 +1,8 @@
 package com.horizen.account.state
 
 import com.horizen.account.event.EthereumEvent
-import com.horizen.evm.interop.EvmLog
 import com.horizen.utils.BytesUtils
+import io.horizen.evm.interop.EvmLog
 import org.web3j.abi.datatypes.Address
 import scorex.crypto.hash.Keccak256
 import scorex.util.ScorexLogging

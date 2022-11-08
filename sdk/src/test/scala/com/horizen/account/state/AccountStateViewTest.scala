@@ -2,8 +2,8 @@ package com.horizen.account.state
 
 import com.horizen.account.storage.AccountStateMetadataStorageView
 import com.horizen.account.utils.ZenWeiConverter
-import com.horizen.evm.StateDB
 import com.horizen.proposition.MCPublicKeyHashProposition
+import io.horizen.evm.StateDB
 import org.junit.Assert._
 import org.junit._
 import org.mockito._

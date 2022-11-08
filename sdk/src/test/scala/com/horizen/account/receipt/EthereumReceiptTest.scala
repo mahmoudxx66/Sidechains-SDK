@@ -1,10 +1,9 @@
 package com.horizen.account.receipt
 
-
-import com.horizen.evm.TrieHasher
-import com.horizen.evm.interop.EvmLog
-import com.horizen.evm.utils.Address
 import com.horizen.utils.BytesUtils
+import io.horizen.evm.TrieHasher
+import io.horizen.evm.interop.EvmLog
+import io.horizen.evm.utils.Address
 import org.junit.Assert._
 import org.junit._
 import org.scalatestplus.junit.JUnitSuite

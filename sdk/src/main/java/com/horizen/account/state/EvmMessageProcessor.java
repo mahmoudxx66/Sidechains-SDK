@@ -1,8 +1,8 @@
 package com.horizen.account.state;
 
-import com.horizen.evm.Evm;
-import com.horizen.evm.interop.EvmContext;
-import com.horizen.evm.utils.Address;
+import io.horizen.evm.Evm;
+import io.horizen.evm.interop.EvmContext;
+import io.horizen.evm.utils.Address;
 
 import java.math.BigInteger;
 

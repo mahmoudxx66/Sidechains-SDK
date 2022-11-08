@@ -11,16 +11,17 @@ import com.horizen.account.utils.{AccountBlockFeeInfo, AccountFeePaymentsUtils, 
 import com.horizen.block.WithdrawalEpochCertificate
 import com.horizen.consensus.{ConsensusEpochInfo, ConsensusEpochNumber, ForgingStakeInfo, intToConsensusEpochNumber}
 import com.horizen.evm._
-import com.horizen.evm.interop.EvmLog
 import com.horizen.params.NetworkParams
 import com.horizen.state.State
 import com.horizen.utils.{ByteArrayWrapper, BytesUtils, ClosableResourceHandler, MerkleTree, TimeToEpochUtils, WithdrawalEpochInfo, WithdrawalEpochUtils}
-
+import io.horizen.evm.{Database, StateDB}
+import io.horizen.evm.interop.EvmLog
 import org.web3j.crypto.ContractUtils.generateContractAddress
 import sparkz.core._
 import sparkz.core.transaction.state.TransactionValidation
 import sparkz.core.utils.NetworkTimeProvider
 import scorex.util.{ModifierId, ScorexLogging}
+
 import java.math.BigInteger
 import java.util
 import scala.collection.JavaConverters.seqAsJavaListConverter

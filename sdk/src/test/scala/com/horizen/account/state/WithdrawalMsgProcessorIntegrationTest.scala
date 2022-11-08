@@ -3,8 +3,8 @@ package com.horizen.account.state
 import com.horizen.account.utils.FeeUtils
 import com.horizen.account.events.AddWithdrawalRequest
 import com.horizen.account.utils.ZenWeiConverter
-import com.horizen.evm.interop.EvmLog
 import com.horizen.utils.{BytesUtils, ClosableResourceHandler}
+import io.horizen.evm.interop.EvmLog
 import org.junit.Assert._
 import org.junit._
 import org.scalatestplus.junit.JUnitSuite

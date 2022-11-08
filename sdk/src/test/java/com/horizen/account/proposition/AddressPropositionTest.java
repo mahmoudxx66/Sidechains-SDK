@@ -3,7 +3,7 @@ package com.horizen.account.proposition;
 import com.horizen.account.proof.SignatureSecp256k1;
 import com.horizen.account.utils.Account;
 import com.horizen.account.utils.Secp256k1;
-import com.horizen.evm.utils.Address;
+import io.horizen.evm.utils.Address;
 import com.horizen.utils.BytesUtils;
 import org.junit.Before;
 import org.junit.Test;
